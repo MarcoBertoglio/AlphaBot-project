@@ -122,6 +122,7 @@ class Classe_Thread(thr.Thread):
             movimento = movimento[3:-4]
 
             if len(movimento) != 0:
+                #esecuzione del movimento complesso
                 print(movimento)
 
                 movimento = movimento.split(',')
@@ -147,6 +148,7 @@ class Classe_Thread(thr.Thread):
                         time.sleep(int(i[1:]) / 1000)
                         self.alphabot.stop()
             else:
+                #esecuzione del movimento base
                 if messaggio[0] == "W":
                         self.alphabot.forward()
                         time.sleep(int(messaggio[1:]) / 1000)
@@ -174,17 +176,19 @@ class Classe_Thread(thr.Thread):
                     messaggio = ""
                 
                 print(messaggio)
-                    
+            
             self.connessione.sendall("OK".encode())
 
 
 def main():
+    #creazione del socket e listen
     s = sck.socket(sck.AF_INET, sck.SOCK_STREAM)
     s.bind(('192.168.0.129', 5000))
     s.listen()
 
     connessione, indrizzo = s.accept()
     
+    #creazione dell'oggetto alphabot per far muovere il robot
     Ab = AlphaBot()
 
     client = Classe_Thread(connessione, indrizzo, Ab)
