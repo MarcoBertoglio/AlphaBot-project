@@ -1,8 +1,10 @@
 import socket as sck
+from sys import stdout
 import threading as thr
 import time
 import RPi.GPIO as GPIO
 import sqlite3
+import subprocess
 
 #classe alphabot per far muovere il robot
 class AlphaBot(object):
@@ -172,6 +174,10 @@ class Classe_Thread(thr.Thread):
                 elif messaggio == "R":
                     self.alphabot.stop()
                 
+                elif messaggio == "exit":
+                    self.run = False 
+
+
                 else:
                     messaggio = ""
                 
