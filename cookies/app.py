@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 import RPi.GPIO as GPIO
 
+#Creazione della classe AlphaBot per muovere il Bot
 class AlphaBot(object):
     def __init__(self, in1=13, in2=12, ena=6, in3=21, in4=20, enb=26):
         self.IN1 = in1
@@ -96,22 +97,26 @@ class AlphaBot(object):
 
 Ab = AlphaBot()
 
+#Flask
 app = Flask(__name__)
 @app.route("/", methods=['GET', 'POST'])
 
+#Pagina di login per accedere ai comandi del Robot
 def index():
   if request.method == 'POST':
     username = request.form['username']
     password = request.form['password']
-
+    
+    #Se l'username e la password si trovano all'interno del DB, allora l'utente viene reindirizzato alla pagina del controllo del Robot
     if validate(username, password):
       resp = make_response(redirect(url_for('controlloRobot')))
+      #Salvo l'username all'interno dei Cookie
       resp.set_cookie('username', username)
       print(request.cookies.get('username'))
       return resp
   return render_template('login.html')
   
-
+#Funzione che controlla se l'username e la password sono all'interno del DB
 def validate(username, password):
     con = sqlite3.connect('C:/Users/GINOM/Dropbox/Scuola/TPSIT/Esercizi/HTTP/flask_examples/cookies/db.db')
     cur = con.cursor()
@@ -123,18 +128,23 @@ def validate(username, password):
     
     return False
 
+#Pagina di controllo del Robot
 @app.route(f'/controlloRobot', methods=['GET', 'POST'])
 def controlloRobot():
+    #Connessione con il DB
     con = sqlite3.connect('C:/Users/GINOM/Dropbox/Scuola/TPSIT/Esercizi/HTTP/flask_examples/cookies/db.db')
     cur = con.cursor()
 
     if request.method == 'POST':
+        #Data e ora attuale grazie alla libreria DATETIME
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-
+        
         if request.form.get('avanti') == 'avanti':
             print("Avanti")
+            #Funzione che fa muovere il robot
             Ab.forward()
+            #Salvo il movimento, l'username e la data all'interno del DB, in pratica faccio uno storico dei movimenti ordinati dall'utente
             cur.execute(f"INSERT INTO comandi (utente, comando, data) VALUES ('{request.cookies.get('username')}','avanti','{dt_string}')")
         elif  request.form.get('indietro') == 'indietro':
             print("Indietro")
@@ -152,7 +162,8 @@ def controlloRobot():
             print("Stop")
             Ab.stop()
             cur.execute(f"INSERT INTO comandi (utente, comando, data) VALUES ('{request.cookies.get('username')}','stop','{dt_string}')")
-
+    
+    #Salvo le modifiche del DB
     con.commit()
     return render_template("controlloRobot.html")
 
