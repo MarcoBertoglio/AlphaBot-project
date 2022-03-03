@@ -173,7 +173,7 @@ def controlloRobot():
             Ab.stop()
             cur.execute(f"INSERT INTO comandi (utente, comando, data) VALUES ('{request.cookies.get('username')}','stop','{dt_string}')")
     
-
+        #interrogazione del DB per trovare il movimento complesso
         movimento = str(cur.execute(f"SELECT sequenza FROM Movimenti WHERE movimento = '{request.form['movimento']}'").fetchall())
         movimento = movimento[3:-4]
 
