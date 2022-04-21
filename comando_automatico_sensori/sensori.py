@@ -19,7 +19,7 @@ GPIO.setup(DL,GPIO.IN,GPIO.PUD_UP)
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-
+#WEBPI che legge i sensori del motore e restituisce i valori (1 se è disattivato, 0 se è attivato)
 @app.route('/api/v1/sensors/obstacles', methods=['GET'])
 def sensori():
     v = ['','']
@@ -28,7 +28,7 @@ def sensori():
 
     return (str(v[0]) + " " + str(v[1]))
 
-
+#WEBPI che fa muovere i motori del Robot, il client manda una GET e il server modifica le velocità e le direzioni dei motori
 @app.route('/api/v1/motors/both', methods=['GET'])
 def motori():
     pwml = int(request.args['pwml'])
@@ -38,9 +38,4 @@ def motori():
         
     return "OK"
     
-
-
-
-
-
 app.run(debug=True, host='192.168.0.138')
